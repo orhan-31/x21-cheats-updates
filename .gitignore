@@ -1,0 +1,10 @@
+/build/
+/out/
+*.user
+*.suo
+*.VC.db
+*.VC.VC.opendb
+*.exe
+*.pdb
+*.ilk
+/third_party/keyauth-1.3/
