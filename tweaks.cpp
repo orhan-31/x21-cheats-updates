@@ -106,7 +106,7 @@ const std::vector<ModuleInfo>& Modules(){static const std::vector<ModuleInfo> m=
  {ModuleId::Priority,L"Emulator Priority",L"Apply Above Normal only while a supported emulator is running.",true},
  {ModuleId::Gpu,L"Emulator GPU Preference",L"Save the GPU preference only while BlueStacks is running.",true},
  {ModuleId::GameMode,L"Windows Game Mode",L"Enable Windows Game Mode for the current user.",true},
- {ModuleId::EmulatorGuide,L"Emulator & Free Fire Performance",L"Detect an online ADB emulator and Free Fire; use supported in-game FPS settings.",false},
+ {ModuleId::EmulatorGuide,L"Free Fire FPS & Emulator Setup Guide",L"Official BlueStacks guidance for 90/120 FPS, CPU/RAM, GPU, and virtualization.",false},
  {ModuleId::InputGuide,L"Mouse Delay & Network Latency Guide",L"Honest guidance; no fake one-click latency tweak.",false}
 };return m;}
 std::wstring ScanEmulator(){emulatorPid=FindPlayerPid();freeFireRunning=false;if(!emulatorPid)return L"No running emulator found. Start BlueStacks, MSI App Player, or LDPlayer, then scan again.";std::wstring result=emulatorProcess+L" detected  |  PID: "+std::to_wstring(emulatorPid);std::wstring adb=FindAdbPath();if(adb.empty())return result+L"  |  ADB unavailable; game detection is off.";if(DetectFreeFire(adb))return result+(freeFireRunning?L"  |  Free Fire is running (ADB).":L"  |  ADB online; Free Fire is not running.");return result+L"  |  ADB device is not online; start the emulator fully and rescan.";}

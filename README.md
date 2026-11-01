@@ -6,6 +6,12 @@
 - X21 KURT (WhatsApp): +359 892 358 538
 - The license sign-in screen includes contact buttons for customers who want to purchase a license. The About page lists both WhatsApp support contacts.
 
+## Free Fire FPS guidance
+
+The Emulator tab's FPS guide summarizes vendor-supported BlueStacks settings. BlueStacks documents up to 90 FPS for Free Fire and a 120 FPS setting for Free Fire MAX on supported configurations. These are configuration options, not guaranteed results; the game profile, emulator, display refresh rate, and hardware must all support and sustain the target. The application does not overclock hardware or modify/inject into game files.
+
+Sources: [Free Fire on BlueStacks](https://support.bluestacks.com/hc/en-us/articles/360059239591-Free-Fire-on-PC-with-BlueStacks-5), [Free Fire MAX at 120 FPS on BlueStacks](https://support.bluestacks.com/hc/en-us/articles/43864024050829-Free-Fire-MAX-on-PC-with-BlueStacks-5), [BlueStacks performance settings](https://support.bluestacks.com/hc/en-us/articles/360053245871-How-to-use-the-BlueStacks-5-Settings-menu), [Microsoft Windows power mode](https://support.microsoft.com/en-us/windows/experience/change-the-power-mode-for-your-windows-pc).
+
 C++17 Windows desktop prototype built with Visual Studio 2026 (x64).
 
 ## Features in this prototype
