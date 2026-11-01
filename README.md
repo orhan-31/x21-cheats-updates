@@ -1,5 +1,11 @@
 # X21 CHEATS 🪽
 
+## License and customer support
+
+- X21TILKI (WhatsApp): +1 (437) 666-6044
+- X21 KURT (WhatsApp): +359 892 358 538
+- The license sign-in screen includes contact buttons for customers who want to purchase a license. The About page lists both WhatsApp support contacts.
+
 C++17 Windows desktop prototype built with Visual Studio 2026 (x64).
 
 ## Features in this prototype

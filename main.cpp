@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <windowsx.h>
+#include <shellapi.h>
 #include <objidl.h>
 #include <gdiplus.h>
 #include <winhttp.h>
@@ -64,6 +65,7 @@ void DrawWingIcon(HDC dc,int x,int y,int w=55,int h=38){if(!themeImage){Label(dc
 void Panel3D(HDC dc,RECT r,COLORREF face,int radius=10){Fill(dc,{r.left+2,r.top+4,r.right+2,r.bottom+4},RGB(2,3,5),radius);Fill(dc,r,RGB(91,67,34),radius);Fill(dc,{r.left+1,r.top+1,r.right-1,r.bottom-2},face,std::max(2,radius-2));Fill(dc,{r.left+9,r.top+2,r.right-9,r.top+4},RGB(156,113,50),2);}
 void Button(HDC dc,RECT r,const wchar_t* caption,COLORREF face,COLORREF fg=TXT){Fill(dc,{r.left+1,r.top+3,r.right+1,r.bottom+3},RGB(2,3,5),10);Fill(dc,r,RGB(126,91,39),10);Fill(dc,{r.left+1,r.top+1,r.right-1,r.bottom-2},face,9);Fill(dc,{r.left+8,r.top+2,r.right-8,r.top+4},RGB(190,143,67),2);SIZE s{};GetTextExtentPoint32W(dc,caption,lstrlenW(caption),&s);Label(dc,r.left+(r.right-r.left-s.cx)/2,r.top+(r.bottom-r.top-s.cy)/2-1,caption,14,fg,true);}
 void SetStatus(const std::wstring& s){statusText=s;activity.push_back(s);if(activity.size()>5)activity.erase(activity.begin());if(mainWnd)InvalidateRect(mainWnd,nullptr,FALSE);}
+void OpenWhatsApp(const wchar_t* number){std::wstring url=L"https://wa.me/";url+=number;ShellExecuteW(nullptr,L"open",url.c_str(),nullptr,nullptr,SW_SHOWNORMAL);}
 void Paint(HDC dc){
  RECT r{};GetClientRect(mainWnd,&r);HBRUSH bg=CreateSolidBrush(BG);FillRect(dc,&r,bg);DeleteObject(bg);
  Fill(dc,{0,0,r.right,5},PURPLE,0);Fill(dc,{0,5,r.right,70},RGB(18,7,9),0);
@@ -71,7 +73,7 @@ void Paint(HDC dc){
  Fill(dc,{r.right-220,19,r.right-30,52},RGB(20,35,27),15);Label(dc,r.right-203,29,L"●  LICENSE VERIFIED",11,GREEN,true);
  Panel3D(dc,{27,91,393,457},PANEL,14);DrawThemeImage(dc,{34,98,386,450});Panel3D(dc,{27,472,393,558},PANEL,12);Label(dc,47,487,L"X21 CHEATS",24,PURPLE,true);DrawWingIcon(dc,214,482,48,38);Label(dc,47,522,L"GOLD WING  •  PERFORMANCE",12,MUTED,true);
  Panel3D(dc,{27,578,393,690},PANEL,12);Label(dc,47,596,L"SYSTEM STATUS",12,MUTED,true);Label(dc,47,623,L"LICENSE  •  VERIFIED",16,GREEN,true);Label(dc,47,655,L"LOCAL SETTINGS PANEL",12,MUTED);
- const int left=420,right=r.right-30;Label(dc,left,91,L"SAFE PC PERFORMANCE TWEAKS",26,TXT,true);Label(dc,left,125,L"Windows and emulator options. Each action runs only when you choose it.",16,MUTED);
+ const int left=420,right=r.right-30;Label(dc,left,91,mainPage==MainPage::About?L"LICENSE & CUSTOMER SUPPORT":L"SAFE PC PERFORMANCE TWEAKS",26,TXT,true);Label(dc,left,125,mainPage==MainPage::About?L"Need a license or want to purchase? Contact X21 support on WhatsApp.":L"Windows and emulator options. Each action runs only when you choose it.",16,MUTED);
  if(mainPage==MainPage::Optimizer||mainPage==MainPage::Emulator){
    Panel3D(dc,{left,145,right,215},PANEL,12);Label(dc,left+15,155,L"TARGET EMULATOR PROCESS",11,MUTED,true);Label(dc,left+15,176,targetText.c_str(),13,TXT,true);Button(dc,{right-106,160,right-14,200},L"SCAN",RGB(36,42,55),RGB(255,222,158));
    Label(dc,left,230,L"QUICK PRESETS",11,MUTED,true);Panel3D(dc,{left,250,left+(right-left)/2-6,307},PANEL,10);Panel3D(dc,{left+(right-left)/2+6,250,right,307},PANEL,10);
@@ -86,7 +88,11 @@ void Paint(HDC dc){
  }else if(mainPage==MainPage::Activity){
    Panel3D(dc,{left,145,right,r.bottom-100},PANEL,12);Label(dc,left+18,164,L"ACTIVITY CONSOLE",12,MUTED,true);Label(dc,right-77,164,L"CLEAR",11,PURPLE,true);int y=198;int start=std::max(0,(int)activity.size()-18);for(int i=start;i<(int)activity.size();++i){Label(dc,left+18,y,L"●",11,i==(int)activity.size()-1?GREEN:PURPLE,true);Label(dc,left+37,y,activity[(size_t)i].c_str(),11,i==(int)activity.size()-1?TXT:MUTED);y+=25;}
  }else{
-   Panel3D(dc,{left,145,right,r.bottom-100},PANEL,12);Label(dc,left+20,170,L"X21 CHEATS",22,PURPLE,true);DrawWingIcon(dc,left+208,164,50,38);Label(dc,left+20,205,L"A Windows and emulator settings panel.",13,MUTED);Label(dc,left+20,246,L"License checks are handled by KeyAuth.",13,MUTED);Label(dc,left+20,274,L"This app does not access game memory or inject into games.",13,MUTED);Label(dc,left+20,322,L"Some Windows settings require administrator rights.",12,RGB(255,208,132));
+   Panel3D(dc,{left,145,right,r.bottom-100},PANEL,12);Label(dc,left+22,166,L"LICENSE, PURCHASE & SUPPORT",18,TXT,true);Label(dc,left+22,197,L"Choose a contact to ask about a license, purchase, or account help.",14,MUTED);
+   int gap=18,cardW=(right-left-56-gap)/2,cardY=236,cardH=174;
+   Panel3D(dc,{left+22,cardY,left+22+cardW,cardY+cardH},ALT,12);Label(dc,left+42,cardY+20,L"X21TILKI",19,PURPLE,true);Label(dc,left+42,cardY+58,L"WHATSAPP  •  LICENSES & SALES",12,MUTED,true);Label(dc,left+42,cardY+88,L"+1 (437) 666-6044",18,TXT,true);Button(dc,{left+42,cardY+120,left+cardW-4,cardY+158},L"CHAT ON WHATSAPP",RGB(30,62,48),GREEN);
+   int x2=left+22+cardW+gap;Panel3D(dc,{x2,cardY,right-22,cardY+cardH},ALT,12);Label(dc,x2+20,cardY+20,L"X21 KURT",19,PURPLE,true);Label(dc,x2+20,cardY+58,L"WHATSAPP  •  LICENSES & SUPPORT",12,MUTED,true);Label(dc,x2+20,cardY+88,L"+359 892 358 538",18,TXT,true);Button(dc,{x2+20,cardY+120,right-42,cardY+158},L"CHAT ON WHATSAPP",RGB(30,62,48),GREEN);
+   Label(dc,left+22,cardY+cardH+28,L"License verification is handled by KeyAuth.",14,MUTED);Label(dc,left+22,cardY+cardH+57,L"This app does not access game memory or inject into games.",14,MUTED);Label(dc,left+22,cardY+cardH+86,L"Some Windows settings require administrator rights.",13,RGB(255,208,132));
  }
  Fill(dc,{0,r.bottom-84,r.right,r.bottom},RGB(8,9,13),0);Panel3D(dc,{(r.right-570)/2,r.bottom-77,(r.right+570)/2,r.bottom-9},RGB(16,18,24),18);
  const wchar_t* nav[]={L"OPTIMIZER",L"EMULATOR",L"ACTIVITY",L"ABOUT"};MainPage pages[]={MainPage::Optimizer,MainPage::Emulator,MainPage::Activity,MainPage::About};int nx=(r.right-548)/2;for(int i=0;i<4;i++){int bx=nx+i*137;bool sel=pages[i]==mainPage;Button(dc,{bx,r.bottom-68,bx+125,r.bottom-19},nav[i],sel?RGB(81,57,24):RGB(20,22,29),sel?RGB(255,218,148):MUTED);}
@@ -101,7 +107,7 @@ void ApplyOne(const ModuleInfo& m,bool feedback=true){if(m.id==ModuleId::Emulato
 }
 void Preset(bool v2){const auto& ms=Modules();std::vector<ModuleId> ids=v2?std::vector<ModuleId>{ModuleId::Dvr,ModuleId::Telemetry,ModuleId::Ntfs,ModuleId::Dns,ModuleId::Power,ModuleId::Temp,ModuleId::Mouse,ModuleId::Priority,ModuleId::Gpu,ModuleId::GameMode}:std::vector<ModuleId>{ModuleId::Dvr,ModuleId::Mouse,ModuleId::GameMode,ModuleId::Dns};for(auto id:ids){auto it=std::find_if(ms.begin(),ms.end(),[&](const ModuleInfo&m){return m.id==id;});if(it!=ms.end()&&!active[(size_t)id])ApplyOne(*it,false);}SetStatus(v2?L"Optimize V2 preset applied. Review each module status below.":L"Optimize V1 preset applied. Review each module status below.");}
 void Click(int x,int y){RECT r{};GetClientRect(mainWnd,&r);int navY=r.bottom-84;if(y>=navY){int start=(r.right-548)/2;int i=(x-start)/137;if(i>=0&&i<4){MainPage p[]={MainPage::Optimizer,MainPage::Emulator,MainPage::Activity,MainPage::About};mainPage=p[i];InvalidateRect(mainWnd,nullptr,FALSE);}return;}
- const int left=420,right=r.right-30;if(mainPage==MainPage::Activity){if(y>=145&&y<=r.bottom-100&&x>=right-90){activity.clear();statusText=L"Activity log cleared.";InvalidateRect(mainWnd,nullptr,FALSE);}return;}if(mainPage==MainPage::About)return;
+ const int left=420,right=r.right-30;if(mainPage==MainPage::Activity){if(y>=145&&y<=r.bottom-100&&x>=right-90){activity.clear();statusText=L"Activity log cleared.";InvalidateRect(mainWnd,nullptr,FALSE);}return;}if(mainPage==MainPage::About){int cardW=(right-left-56-18)/2;if(y>=356&&y<=394){if(x>=left+42&&x<=left+cardW-4)OpenWhatsApp(L"14376666044");else if(x>=left+22+cardW+18+20&&x<=right-42)OpenWhatsApp(L"359892358538");}return;}
  if(y>=145&&y<=215&&x>=right-118){targetText=ScanEmulator();SetStatus(targetText);return;}
  if(y>=250&&y<=307){if(x<(left+right)/2)Preset(false);else Preset(true);return;}
  int top=350,bottom=r.bottom-99,rowH=58,gap=7;if(y>=top&&y<bottom){int idx=(y-top+moduleScroll)/(rowH+gap);if(idx>=0&&idx<(int)Modules().size())ApplyOne(Modules()[(size_t)idx]);}}
@@ -124,7 +130,7 @@ void PaintAuth(HDC dc){
     Label(dc,50,253,L"LICENSE KEY",13,MUTED,true);Panel3D(dc,{48,279,552,344},RGB(23,13,15),10);Label(dc,64,294,L"KEY",12,PURPLE,true);
     Panel3D(dc,{180,374,420,430},RGB(69,22,25),12);Label(dc,273,391,L"LOGIN",18,TXT,true);
     int pulse=authFrame%80;COLORREF dot=authError?RED:(pulse<40?GREEN:RGB(44,147,105));HBRUSH b=CreateSolidBrush(dot);HPEN p=CreatePen(PS_SOLID,1,dot);auto ob=SelectObject(dc,b);auto op=SelectObject(dc,p);Ellipse(dc,51,461,65,475);SelectObject(dc,ob);SelectObject(dc,op);DeleteObject(b);DeleteObject(p);Label(dc,79,456,authStatus.c_str(),14,authError?RED:MUTED,true);
-    Label(dc,50,504,L"KEYAUTH SECURE CHECK  •  KEY STAYS MASKED",11,MUTED,true);Fill(dc,{48,532,552,536},RGB(54,38,22),2);int x=48+(authFrame*3)%480;Fill(dc,{x,530,x+42,538},PURPLE,4);
+    Label(dc,50,490,L"NEED A LICENSE?  CONTACT US TO BUY",13,TXT,true);Button(dc,{48,516,290,550},L"X21TILKI  •  WHATSAPP",RGB(30,62,48),GREEN);Button(dc,{310,516,552,550},L"X21 KURT  •  WHATSAPP",RGB(30,62,48),GREEN);
     Label(dc,565,27,L"×",20,MUTED,true);
 }
 LRESULT CALLBACK AuthProc(HWND h,UINT msg,WPARAM wp,LPARAM lp){switch(msg){
@@ -134,7 +140,7 @@ case WM_DRAWITEM:{auto d=(DRAWITEMSTRUCT*)lp;COLORREF c=(d->itemState&ODS_SELECT
 case WM_TIMER:++authFrame;InvalidateRect(h,nullptr,FALSE);return 0;
 case WM_COMMAND:if(LOWORD(wp)==1){wchar_t key[512]{};GetWindowTextW(authEdit,key,512);if(!key[0]){authStatus=L"Please enter a license key.";authError=true;InvalidateRect(h,nullptr,FALSE);SetFocus(authEdit);return 0;}authKey=key;authDone=true;KillTimer(h,1);DestroyWindow(h);return 0;}break;
 case WM_KEYDOWN:if(wp==VK_ESCAPE){authCancelled=true;DestroyWindow(h);return 0;}if(wp==VK_RETURN){SendMessageW(h,WM_COMMAND,1,0);return 0;}break;
-case WM_LBUTTONUP:{int x=GET_X_LPARAM(lp),y=GET_Y_LPARAM(lp);if(x>=545&&y<58){authCancelled=true;KillTimer(h,1);DestroyWindow(h);return 0;}break;}
+case WM_LBUTTONUP:{int x=GET_X_LPARAM(lp),y=GET_Y_LPARAM(lp);if(x>=545&&y<58){authCancelled=true;KillTimer(h,1);DestroyWindow(h);return 0;}if(y>=516&&y<=550){if(x>=48&&x<=290)OpenWhatsApp(L"14376666044");else if(x>=310&&x<=552)OpenWhatsApp(L"359892358538");return 0;}break;}
 case WM_NCHITTEST:{POINT pt{GET_X_LPARAM(lp),GET_Y_LPARAM(lp)};ScreenToClient(h,&pt);if(pt.y<100&&pt.x<545)return HTCAPTION;return HTCLIENT;}
 case WM_PAINT:{PAINTSTRUCT ps{};HDC dc=BeginPaint(h,&ps);RECT r{};GetClientRect(h,&r);HDC buffer=CreateCompatibleDC(dc);HBITMAP bitmap=CreateCompatibleBitmap(dc,r.right-r.left,r.bottom-r.top);if(buffer&&bitmap){HGDIOBJ old=SelectObject(buffer,bitmap);PaintAuth(buffer);BitBlt(dc,0,0,r.right-r.left,r.bottom-r.top,buffer,0,0,SRCCOPY);SelectObject(buffer,old);DeleteObject(bitmap);DeleteDC(buffer);}else PaintAuth(dc);EndPaint(h,&ps);return 0;}
 case WM_ERASEBKGND:return 1;
