@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(X21_CHAT VERSION 1.0.0 LANGUAGES CXX)
+project(X21_CHAT VERSION 1.0.1 LANGUAGES CXX)
 set(X21_APP_VERSION "${PROJECT_VERSION}" CACHE STRING "Version embedded in the app")
 
 if(NOT WIN32 OR NOT MSVC)
